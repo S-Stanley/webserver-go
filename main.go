@@ -1,29 +1,38 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"log"
+	"html/template"
 )
 
 func router() {
-	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	fmt.Fprintf(w, "Hello world!")
-	// })
 
-	fs := http.FileServer(http.Dir("./static/"))
+	tmpl, _ := template.ParseFiles("static/index.html")
 
-	// http.Handle("/", http.StripPrefix("/static/", fs))
-	http.Handle("/", fs)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		Data := struct {
+			Name string
+			Lang string
+		} {
+			"Hello world",
+			"Go",
+		}
 
+		tmpl.Execute(w, Data)
+	})
 }
 
 func run_server() {
-	err := http.ListenAndServe(":8000", nil);
+	port := ":8000"
+	fmt.Printf("Running on %s\n", port);
+	err := http.ListenAndServe(port, nil);
 
 	if (err != nil) {
 		log.Fatal(err)
 	}
+
 }
 
 func main() {
